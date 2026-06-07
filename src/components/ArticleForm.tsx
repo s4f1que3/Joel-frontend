@@ -16,6 +16,7 @@ export default function ArticleForm({
 }: ArticleFormProps) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [images, setImages] = useState<File[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ export default function ArticleForm({
       const fd = new FormData();
       fd.append("title", title);
       fd.append("content", content);
+      if (thumbnail) fd.append("thumbnail", thumbnail);
       images.forEach((img) => fd.append("images", img));
       files.forEach((f) => fd.append("files", f));
       await onSubmit(fd);
@@ -85,6 +87,40 @@ export default function ArticleForm({
           className="w-full border border-border-color rounded-xl px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-primary transition-colors resize-none placeholder:text-text-secondary"
           placeholder="Write your article here…"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-text-primary mb-2">
+          Thumbnail
+        </label>
+        <div className="border border-dashed border-border-color rounded-xl p-4">
+          <label
+            htmlFor="thumbnail-upload"
+            className="flex items-center gap-2 cursor-pointer text-text-secondary text-sm hover:text-primary transition-colors w-fit"
+          >
+            <Upload size={15} />
+            <span>{thumbnail ? "Replace thumbnail" : "Add thumbnail"}</span>
+          </label>
+          <input
+            id="thumbnail-upload"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
+            className="hidden"
+          />
+          {thumbnail && (
+            <div className="mt-3 flex items-center gap-1.5 bg-surface px-2.5 py-1 rounded-lg text-xs text-text-secondary w-fit">
+              {thumbnail.name}
+              <button
+                type="button"
+                onClick={() => setThumbnail(null)}
+                className="hover:text-red-500 transition-colors"
+              >
+                <X size={11} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div>
