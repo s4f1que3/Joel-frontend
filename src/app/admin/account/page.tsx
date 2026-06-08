@@ -1,10 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { Check, X } from "lucide-react";
 import { authAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Tab = "password" | "email";
+
+interface PasswordReqs {
+  length: boolean;
+  upper: boolean;
+  lower: boolean;
+  number: boolean;
+  special: boolean;
+}
+
+function checkPassword(pw: string): PasswordReqs {
+  return {
+    length: pw.length >= 8,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    number: /[0-9]/.test(pw),
+    special: /[^A-Za-z0-9]/.test(pw),
+  };
+}
+
+function allMet(reqs: PasswordReqs) {
+  return Object.values(reqs).every(Boolean);
+}
+
+const REQ_LABELS: { key: keyof PasswordReqs; label: string }[] = [
+  { key: "length", label: "At least 8 characters" },
+  { key: "upper", label: "One uppercase letter" },
+  { key: "lower", label: "One lowercase letter" },
+  { key: "number", label: "One number" },
+  { key: "special", label: "One special character" },
+];
 
 export default function AdminAccountPage() {
   const { user } = useAuth();
@@ -17,6 +48,7 @@ export default function AdminAccountPage() {
   const [pwLoading, setPwLoading] = useState(false);
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwError, setPwError] = useState("");
+  const [showReqs, setShowReqs] = useState(false);
 
   // Email change state
   const [emailForm, setEmailForm] = useState({ new_email: "" });
@@ -26,19 +58,33 @@ export default function AdminAccountPage() {
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [emailError, setEmailError] = useState("");
 
+  const pwReqs = checkPassword(pwForm.new_password);
+
   const sendPasswordOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pwForm.new_password !== pwForm.confirm) {
-      setPwError("New passwords do not match");
+    setPwError("");
+
+    if (!allMet(pwReqs)) {
+      setPwError("New password does not meet the requirements.");
+      setShowReqs(true);
       return;
     }
+    if (pwForm.new_password !== pwForm.confirm) {
+      setPwError("New passwords do not match.");
+      return;
+    }
+
     setPwLoading(true);
-    setPwError("");
     try {
+      const valid = await authAPI.verifyPassword(user!.email, pwForm.password);
+      if (!valid) {
+        setPwError("Incorrect current password.");
+        return;
+      }
       await authAPI.sendOtp(user!.email, pwForm.password);
       setPwOtpSent(true);
     } catch {
-      setPwError("Failed to send OTP. Check your current password.");
+      setPwError("Something went wrong. Please try again.");
     } finally {
       setPwLoading(false);
     }
@@ -59,8 +105,9 @@ export default function AdminAccountPage() {
       setPwOtpSent(false);
       setPwForm({ password: "", new_password: "", confirm: "" });
       setPwOtp("");
+      setShowReqs(false);
     } catch {
-      setPwError("Invalid or expired OTP");
+      setPwError("Invalid or expired OTP.");
     } finally {
       setPwLoading(false);
     }
@@ -157,11 +204,24 @@ export default function AdminAccountPage() {
                 <input
                   type="password"
                   value={pwForm.new_password}
-                  onChange={(e) => setPwForm((p) => ({ ...p, new_password: e.target.value }))}
+                  onChange={(e) => {
+                    setPwForm((p) => ({ ...p, new_password: e.target.value }));
+                    setShowReqs(true);
+                  }}
                   required
                   className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
                   placeholder="••••••••"
                 />
+                {showReqs && (
+                  <ul className="mt-3 space-y-1.5">
+                    {REQ_LABELS.map(({ key, label }) => (
+                      <li key={key} className={`flex items-center gap-2 text-xs ${pwReqs[key] ? "text-green-600" : "text-text-secondary"}`}>
+                        {pwReqs[key] ? <Check size={11} /> : <X size={11} />}
+                        {label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-2">Confirm new password</label>
@@ -179,7 +239,7 @@ export default function AdminAccountPage() {
                 disabled={pwLoading}
                 className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
               >
-                {pwLoading ? "Sending OTP…" : "Send confirmation code"}
+                {pwLoading ? "Verifying…" : "Send confirmation code"}
               </button>
             </form>
           ) : (

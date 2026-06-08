@@ -182,6 +182,13 @@ export const authAPI = {
   signOut: () =>
     fetchWithAuth(`${BASE_URL}/auth/sign-out`, { method: "POST" }).then(handle),
 
+  verifyPassword: (email: string, password: string) =>
+    fetch(`${BASE_URL}/auth/verify-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    }).then(handle),
+
   sendOtp: (email: string, password: string) =>
     fetchWithAuth(`${BASE_URL}/auth/send-otp`, {
       method: "POST",
