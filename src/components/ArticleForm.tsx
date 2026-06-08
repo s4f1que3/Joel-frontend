@@ -8,9 +8,8 @@ interface ArticleFormProps {
     title?: string;
     content?: string;
     thumbnailUrl?: string;
-    thumbnailKey?: string;
-    existingImages?: { _key: string; url: string }[];
-    existingFiles?: { _key: string; url: string; originalFilename: string }[];
+    existingImages?: { url: string }[];
+    existingFiles?: { url: string; originalFilename: string }[];
   };
   onSubmit: (formData: FormData) => Promise<void>;
   submitLabel?: string;
@@ -27,8 +26,8 @@ export default function ArticleForm({
   const [removeThumbnail, setRemoveThumbnail] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [files, setFiles] = useState<File[]>([]);
-  const [removedImageKeys, setRemovedImageKeys] = useState<Set<string>>(new Set());
-  const [removedFileKeys, setRemovedFileKeys] = useState<Set<string>>(new Set());
+  const [removedImageUrls, setRemovedImageUrls] = useState<Set<string>>(new Set());
+  const [removedFileUrls, setRemovedFileUrls] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -44,12 +43,12 @@ export default function ArticleForm({
     e.target.value = "";
   };
 
-  const removeExistingImage = (key: string) => {
-    setRemovedImageKeys((prev) => new Set([...prev, key]));
+  const removeExistingImage = (url: string) => {
+    setRemovedImageUrls((prev) => new Set([...prev, url]));
   };
 
-  const removeExistingFile = (key: string) => {
-    setRemovedFileKeys((prev) => new Set([...prev, key]));
+  const removeExistingFile = (url: string) => {
+    setRemovedFileUrls((prev) => new Set([...prev, url]));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,10 +63,10 @@ export default function ArticleForm({
       if (removeThumbnail) fd.append("remove_thumbnail", "true");
       images.forEach((img) => fd.append("images", img));
       files.forEach((f) => fd.append("files", f));
-      if (removedImageKeys.size > 0)
-        fd.append("remove_image_keys", JSON.stringify([...removedImageKeys]));
-      if (removedFileKeys.size > 0)
-        fd.append("remove_file_keys", JSON.stringify([...removedFileKeys]));
+      if (removedImageUrls.size > 0)
+        fd.append("remove_image_urls", JSON.stringify([...removedImageUrls]));
+      if (removedFileUrls.size > 0)
+        fd.append("remove_file_urls", JSON.stringify([...removedFileUrls]));
       await onSubmit(fd);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -77,10 +76,10 @@ export default function ArticleForm({
   };
 
   const existingImages = (initialData?.existingImages ?? []).filter(
-    (img) => !removedImageKeys.has(img._key)
+    (img) => img.url && !removedImageUrls.has(img.url)
   );
   const existingFiles = (initialData?.existingFiles ?? []).filter(
-    (f) => !removedFileKeys.has(f._key)
+    (f) => f.url && !removedFileUrls.has(f.url)
   );
 
   return (
@@ -225,7 +224,7 @@ export default function ArticleForm({
           {existingImages.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {existingImages.map((img) => (
-                <div key={img._key} className="relative group">
+                <div key={img.url} className="relative group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={img.url}
@@ -234,7 +233,7 @@ export default function ArticleForm({
                   />
                   <button
                     type="button"
-                    onClick={() => removeExistingImage(img._key)}
+                    onClick={() => removeExistingImage(img.url)}
                     className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full items-center justify-center hidden group-hover:flex"
                   >
                     <X size={8} />
@@ -289,7 +288,7 @@ export default function ArticleForm({
           {existingFiles.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {existingFiles.map((f) => (
-                <div key={f._key} className="flex items-center gap-1 group">
+                <div key={f.url} className="flex items-center gap-1 group">
                   <a
                     href={f.url}
                     target="_blank"
@@ -301,7 +300,7 @@ export default function ArticleForm({
                   </a>
                   <button
                     type="button"
-                    onClick={() => removeExistingFile(f._key)}
+                    onClick={() => removeExistingFile(f.url)}
                     className="p-0.5 text-text-secondary hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <X size={12} />
