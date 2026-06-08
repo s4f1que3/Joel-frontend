@@ -51,7 +51,9 @@ export default function AdminAccountPage() {
   const [showReqs, setShowReqs] = useState(false);
 
   // Email change state
-  const [newEmail, setNewEmail] = useState("");
+  const [emailForm, setEmailForm] = useState({ new_email: "" });
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [emailOtp, setEmailOtp] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [emailError, setEmailError] = useState("");
@@ -111,16 +113,36 @@ export default function AdminAccountPage() {
     }
   };
 
-  const handleChangeEmail = async (e: React.FormEvent) => {
+  const sendEmailOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailLoading(true);
     setEmailError("");
     try {
-      await authAPI.changeEmail({ new_email: newEmail });
-      setEmailSuccess(true);
-      setNewEmail("");
+      await authAPI.sendOtp(user!.email, "");
+      setEmailOtpSent(true);
     } catch {
-      setEmailError("Failed to update email. Please try again.");
+      setEmailError("Failed to send OTP");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const confirmEmailChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmailLoading(true);
+    setEmailError("");
+    try {
+      await authAPI.changeEmail({
+        email: user!.email,
+        token: emailOtp,
+        new_email: emailForm.new_email,
+      });
+      setEmailSuccess(true);
+      setEmailOtpSent(false);
+      setEmailForm({ new_email: "" });
+      setEmailOtp("");
+    } catch {
+      setEmailError("Invalid or expired OTP");
     } finally {
       setEmailLoading(false);
     }
@@ -263,7 +285,7 @@ export default function AdminAccountPage() {
         <div>
           {emailSuccess && (
             <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
-              Email updated successfully.
+              Confirmation email sent. Check your new inbox and click the link to complete the change.
             </div>
           )}
           {emailError && (
@@ -271,27 +293,67 @@ export default function AdminAccountPage() {
               {emailError}
             </div>
           )}
+
           {!emailSuccess && (
-            <form onSubmit={handleChangeEmail} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">New email address</label>
-                <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  required
-                  className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
-                  placeholder="new@example.com"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={emailLoading}
-                className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
-              >
-                {emailLoading ? "Updating…" : "Update email"}
-              </button>
-            </form>
+            !emailOtpSent ? (
+              <form onSubmit={sendEmailOtp} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">New email address</label>
+                  <input
+                    type="email"
+                    value={emailForm.new_email}
+                    onChange={(e) => setEmailForm({ new_email: e.target.value })}
+                    required
+                    className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                    placeholder="new@example.com"
+                  />
+                </div>
+                <p className="text-text-secondary text-xs">
+                  A confirmation code will be sent to your <strong>current</strong> email address.
+                </p>
+                <button
+                  type="submit"
+                  disabled={emailLoading}
+                  className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                >
+                  {emailLoading ? "Sending…" : "Send confirmation code"}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={confirmEmailChange} className="space-y-4">
+                <p className="text-text-secondary text-sm">
+                  A confirmation code was sent to <strong>{user?.email}</strong>. Enter it below.
+                </p>
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">Confirmation code</label>
+                  <input
+                    type="text"
+                    value={emailOtp}
+                    onChange={(e) => setEmailOtp(e.target.value)}
+                    required
+                    className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors tracking-widest"
+                    placeholder="000000"
+                    maxLength={6}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={emailLoading}
+                    className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                  >
+                    {emailLoading ? "Confirming…" : "Confirm change"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setEmailOtpSent(false); setEmailError(""); }}
+                    className="text-sm text-text-secondary hover:text-text-primary transition-colors px-4"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )
           )}
         </div>
       )}
