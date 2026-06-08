@@ -91,6 +91,9 @@ export const articlesAPI = {
 };
 
 export const uploadedArticlesAPI = {
+  getAll: () =>
+    fetchWithAuth(`${BASE_URL}/upload-article`).then(handle),
+
   getById: (id: string) =>
     fetchWithAuth(`${BASE_URL}/upload-article/${id}`).then(handle),
 

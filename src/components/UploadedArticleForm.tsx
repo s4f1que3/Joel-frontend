@@ -22,7 +22,6 @@ export default function UploadedArticleForm({
   submitLabel = "Upload",
 }: UploadedArticleFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
-  const [pinned, setPinned] = useState(initialData?.pinned ?? false);
   const [articleFile, setArticleFile] = useState<File | null>(null);
   const [removeArticle, setRemoveArticle] = useState(false);
   const [images, setImages] = useState<File[]>([]);
@@ -51,7 +50,7 @@ export default function UploadedArticleForm({
     try {
       const fd = new FormData();
       fd.append("title", title);
-      fd.append("pinned", String(pinned));
+      fd.append("pinned", "false");
       if (articleFile) fd.append("article", articleFile);
       if (removeArticle) fd.append("remove_article", "true");
       images.forEach((img) => fd.append("images", img));
@@ -312,17 +311,6 @@ export default function UploadedArticleForm({
           )}
         </div>
       </div>
-
-      {/* Pinned */}
-      <label className="flex items-center gap-2.5 cursor-pointer w-fit">
-        <input
-          type="checkbox"
-          checked={pinned}
-          onChange={(e) => setPinned(e.target.checked)}
-          className="w-4 h-4 accent-primary"
-        />
-        <span className="text-sm text-text-primary">Pin this article</span>
-      </label>
 
       <button
         type="submit"

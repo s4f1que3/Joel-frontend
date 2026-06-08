@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Pin, PinOff, Trash2, Pencil } from "lucide-react";
-import { articlesAPI } from "@/lib/api";
+import { articlesAPI, uploadedArticlesAPI } from "@/lib/api";
 
 interface Article {
   _id: string;
@@ -13,20 +13,29 @@ interface Article {
   publishedAt?: string;
 }
 
+interface UploadedArticle {
+  _id: string;
+  Title: string;
+  publishedAt?: string;
+}
+
 export default function AdminArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [uploadedArticles, setUploadedArticles] = useState<UploadedArticle[]>([]);
   const [pinned, setPinned] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const load = async () => {
     try {
-      const [all, pin] = await Promise.allSettled([
+      const [all, pin, uploaded] = await Promise.allSettled([
         articlesAPI.getAll(),
         articlesAPI.getPinned(),
+        uploadedArticlesAPI.getAll(),
       ]);
       setArticles(all.status === "fulfilled" && Array.isArray(all.value) ? all.value : []);
       setPinned(pin.status === "fulfilled" ? pin.value : null);
+      setUploadedArticles(uploaded.status === "fulfilled" && Array.isArray(uploaded.value) ? uploaded.value : []);
     } catch {
       setError("Failed to load articles");
     } finally {
@@ -43,6 +52,16 @@ export default function AdminArticlesPage() {
       load();
     } catch {
       alert("Failed to delete article");
+    }
+  };
+
+  const handleDeleteUploaded = async (id: string) => {
+    if (!confirm("Delete this uploaded article?")) return;
+    try {
+      await uploadedArticlesAPI.delete(id);
+      load();
+    } catch {
+      alert("Failed to delete uploaded article");
     }
   };
 
@@ -161,6 +180,38 @@ export default function AdminArticlesPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {uploadedArticles.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-base font-semibold text-text-primary mb-3">Uploaded articles</h2>
+          <div className="space-y-3">
+            {uploadedArticles.map((article) => (
+              <div
+                key={article._id}
+                className="border border-border-color rounded-2xl px-6 py-4 flex items-center justify-between gap-4"
+              >
+                <h3 className="text-text-primary font-medium text-sm truncate flex-1 min-w-0">
+                  {article.Title}
+                </h3>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Link
+                    href={`/admin/articles/${article._id}/edit-uploaded`}
+                    className="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <Pencil size={15} />
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteUploaded(article._id)}
+                    className="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
