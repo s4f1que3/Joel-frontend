@@ -10,10 +10,10 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 async function getData() {
   const [articlesRes, pinnedRes, bioRes, contactRes] = await Promise.allSettled([
-    fetch(`${API}/articles`, { next: { revalidate: 60 } }),
-    fetch(`${API}/articles/pinned`, { next: { revalidate: 60 } }),
-    fetch(`${API}/bio`, { next: { revalidate: 60 } }),
-    fetch(`${API}/contact`, { next: { revalidate: 60 } }),
+    fetch(`${API}/articles`, { cache: "no-store" }),
+    fetch(`${API}/articles/pinned`, { cache: "no-store" }),
+    fetch(`${API}/bio`, { cache: "no-store" }),
+    fetch(`${API}/contact`, { cache: "no-store" }),
   ]);
 
   const articles = articlesRes.status === "fulfilled" && articlesRes.value.ok
