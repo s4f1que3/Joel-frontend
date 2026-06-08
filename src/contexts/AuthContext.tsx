@@ -13,6 +13,7 @@ interface AuthContextType {
   token: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (partial: Partial<User>) => void;
   isLoading: boolean;
 }
 
@@ -46,6 +47,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
   };
 
+  const updateUser = (partial: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...partial };
+      localStorage.setItem("user", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const signOut = async () => {
     await authAPI.signOut().catch(() => {});
     localStorage.removeItem("token");
@@ -56,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, signIn, signOut, isLoading }}>
+    <AuthContext.Provider value={{ user, token, signIn, signOut, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

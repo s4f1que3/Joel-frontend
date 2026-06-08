@@ -38,7 +38,7 @@ const REQ_LABELS: { key: keyof PasswordReqs; label: string }[] = [
 ];
 
 export default function AdminAccountPage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [tab, setTab] = useState<Tab>("password");
 
   // Password change state
@@ -138,6 +138,7 @@ export default function AdminAccountPage() {
         token: emailOtp,
         new_email: emailForm.new_email,
       });
+      updateUser({ email: emailForm.new_email });
       setEmailSuccess(true);
       setEmailOtpSent(false);
       setEmailForm({ new_email: "" });
@@ -286,7 +287,7 @@ export default function AdminAccountPage() {
         <div>
           {emailSuccess && (
             <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
-              Confirmation email sent. Check your new inbox and click the link to complete the change.
+              Email changed successfully.
             </div>
           )}
           {emailError && (
