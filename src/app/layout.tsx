@@ -3,8 +3,11 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Joel Richards",
-  description: "Personal website of Joel Richards",
+  title: "ERUSS",
+  description: "Personal website of ERUSS",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -64,8 +64,8 @@ export default function AdminResumePage() {
 
   if (loading) {
     return (
-      <div className="p-10 flex items-center gap-2 text-text-secondary text-sm">
-        <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="p-10 flex items-center gap-2 text-white/50 text-sm">
+        <div className="w-4 h-4 rounded-full border-2 border-flame border-t-transparent animate-spin" />
         Loading…
       </div>
     );
@@ -73,15 +73,15 @@ export default function AdminResumePage() {
 
   return (
     <div className="p-10 max-w-2xl">
-      <h1 className="text-2xl font-semibold text-text-primary mb-1">Resume / CV</h1>
-      <p className="text-text-secondary text-sm mb-8">Upload or replace your CV file.</p>
+      <h1 className="text-2xl font-semibold text-white mb-1">Resume / CV</h1>
+      <p className="text-white/50 text-sm mb-8">Upload or replace your CV file.</p>
 
       {resume?.file?.asset ? (
-        <div className="border border-border-color rounded-2xl px-6 py-5 flex items-center justify-between gap-4 mb-6">
+        <div className="border border-white/10 bg-ink-light rounded-2xl px-6 py-5 flex items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <FileText size={18} className="text-primary shrink-0" />
+            <FileText size={18} className="text-flame shrink-0" />
             <div>
-              <p className="text-text-primary text-sm font-medium">
+              <p className="text-white text-sm font-medium">
                 {resume.file.asset.originalFilename ?? "resume.pdf"}
               </p>
               {resume.file.asset.url && (
@@ -89,7 +89,7 @@ export default function AdminResumePage() {
                   href={resume.file.asset.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline"
+                  className="text-xs text-flame hover:underline"
                 >
                   Preview
                 </a>
@@ -98,20 +98,20 @@ export default function AdminResumePage() {
           </div>
           <button
             onClick={handleDelete}
-            className="p-2 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="p-2 rounded-lg text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-colors"
             title="Remove resume"
           >
             <Trash2 size={15} />
           </button>
         </div>
       ) : (
-        <div className="border border-dashed border-border-color rounded-2xl p-12 text-center mb-6">
-          <p className="text-text-secondary text-sm mb-4">No resume uploaded yet.</p>
+        <div className="border border-dashed border-white/15 rounded-2xl p-12 text-center mb-6">
+          <p className="text-white/50 text-sm mb-4">No resume uploaded yet.</p>
         </div>
       )}
 
       <div className="flex items-center gap-4">
-        <label className={`flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-medium cursor-pointer hover:bg-primary-dark transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+        <label className={`flex items-center gap-2 bg-flame text-ink px-5 py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:bg-flame-dark transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
           <Upload size={15} />
           {uploading ? "Uploading…" : resume?.file?.asset ? "Replace file" : "Upload file"}
           <input
@@ -123,7 +123,7 @@ export default function AdminResumePage() {
             disabled={uploading}
           />
         </label>
-        {error && <span className="text-red-500 text-sm">{error}</span>}
+        {error && <span className="text-red-400 text-sm">{error}</span>}
       </div>
     </div>
   );

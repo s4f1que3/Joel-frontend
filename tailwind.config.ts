@@ -17,6 +17,10 @@ const config: Config = {
         "border-color": "#D2D2D7",
         "text-primary": "#1D1D1F",
         "text-secondary": "#6E6E73",
+        ink: "#0B0B0D",
+        "ink-light": "#19191D",
+        flame: "#FF751F",
+        "flame-dark": "#E5621A",
       },
       fontFamily: {
         sans: [

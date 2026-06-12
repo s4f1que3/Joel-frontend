@@ -1,44 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, User, Phone, FileUp, Settings } from "lucide-react";
+import { Briefcase, User, Phone, FileUp, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const sections = [
   {
-    href: "/admin/articles",
-    icon: FileText,
-    label: "Articles",
-    description: "Create, edit, pin, and delete articles",
-    color: "text-primary bg-primary/10",
+    href: "/admin/projects",
+    icon: Briefcase,
+    label: "Projects",
+    description: "Create, edit, and delete projects",
+    color: "text-flame bg-flame/10",
   },
   {
     href: "/admin/bio",
     icon: User,
     label: "Bio",
     description: "Edit your biography and personal statement",
-    color: "text-accent bg-accent/10",
+    color: "text-flame bg-flame/10",
   },
   {
     href: "/admin/contact",
     icon: Phone,
     label: "Contact",
     description: "Manage your contact information",
-    color: "text-primary bg-primary/10",
+    color: "text-flame bg-flame/10",
   },
   {
     href: "/admin/resume",
     icon: FileUp,
     label: "Resume / CV",
     description: "Upload or replace your CV file",
-    color: "text-accent bg-accent/10",
+    color: "text-flame bg-flame/10",
   },
   {
     href: "/admin/account",
     icon: Settings,
     label: "Account",
     description: "Change your email and password",
-    color: "text-primary bg-primary/10",
+    color: "text-flame bg-flame/10",
   },
 ];
 
@@ -48,8 +48,8 @@ export default function AdminDashboard() {
   return (
     <div className="p-10">
       <div className="mb-10">
-        <h1 className="text-2xl font-semibold text-text-primary mb-1">Dashboard</h1>
-        <p className="text-text-secondary text-sm">
+        <h1 className="text-2xl font-semibold text-white mb-1">Dashboard</h1>
+        <p className="text-white/50 text-sm">
           Welcome back{user?.email ? `, ${user.email}` : ""}.
         </p>
       </div>
@@ -59,15 +59,15 @@ export default function AdminDashboard() {
           <Link
             key={href}
             href={href}
-            className="group border border-border-color rounded-2xl p-6 hover:border-primary/40 hover:shadow-sm transition-all duration-200"
+            className="group border border-white/10 bg-ink-light rounded-2xl p-6 hover:border-flame/40 transition-all duration-200"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${color}`}>
               <Icon size={18} />
             </div>
-            <h2 className="text-text-primary font-semibold text-base group-hover:text-primary transition-colors mb-1">
+            <h2 className="text-white font-semibold text-base group-hover:text-flame transition-colors mb-1">
               {label}
             </h2>
-            <p className="text-text-secondary text-sm">{description}</p>
+            <p className="text-white/50 text-sm">{description}</p>
           </Link>
         ))}
       </div>

@@ -89,8 +89,8 @@ export default function AdminContactPage() {
 
   if (loading) {
     return (
-      <div className="p-10 flex items-center gap-2 text-text-secondary text-sm">
-        <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="p-10 flex items-center gap-2 text-white/50 text-sm">
+        <div className="w-4 h-4 rounded-full border-2 border-flame border-t-transparent animate-spin" />
         Loading…
       </div>
     );
@@ -98,28 +98,28 @@ export default function AdminContactPage() {
 
   return (
     <div className="p-10 max-w-2xl">
-      <h1 className="text-2xl font-semibold text-text-primary mb-1">Contact</h1>
-      <p className="text-text-secondary text-sm mb-8">
+      <h1 className="text-2xl font-semibold text-white mb-1">Contact</h1>
+      <p className="text-white/50 text-sm mb-8">
         {contact ? "Update your contact information." : "Add your contact information."}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {fields.map(({ key, label, placeholder, type }) => (
           <div key={key}>
-            <label className="block text-sm font-medium text-text-primary mb-2">{label}</label>
+            <label className="block text-sm font-medium text-white mb-2">{label}</label>
             <div className="flex gap-2">
               <input
                 type={type}
                 value={form[key]}
                 onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
-                className="flex-1 border border-border-color rounded-xl px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-text-secondary"
+                className="flex-1 bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-flame transition-colors placeholder:text-white/30"
                 placeholder={placeholder}
               />
               {form[key] && (
                 <button
                   type="button"
                   onClick={() => handleClearField(key)}
-                  className="p-3 border border-border-color rounded-xl text-text-secondary hover:text-red-500 hover:border-red-200 transition-colors"
+                  className="p-3 border border-white/10 rounded-xl text-white/50 hover:text-red-400 hover:border-red-500/30 transition-colors"
                   title={`Remove ${label}`}
                 >
                   <Trash2 size={15} />
@@ -133,15 +133,15 @@ export default function AdminContactPage() {
           <button
             type="submit"
             disabled={saving}
-            className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+            className="bg-flame text-ink px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors disabled:opacity-50"
           >
             {saving ? "Saving…" : contact ? "Save changes" : "Create contact"}
           </button>
           {success && (
-            <span className="text-green-600 text-sm">Contact info saved.</span>
+            <span className="text-green-400 text-sm">Contact info saved.</span>
           )}
           {error && (
-            <span className="text-red-500 text-sm">{error}</span>
+            <span className="text-red-400 text-sm">{error}</span>
           )}
         </div>
       </form>

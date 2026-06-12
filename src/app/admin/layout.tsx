@@ -17,8 +17,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
-        <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-ink">
+        <div className="w-5 h-5 rounded-full border-2 border-flame border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-ink">
       <AdminSidebar />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>

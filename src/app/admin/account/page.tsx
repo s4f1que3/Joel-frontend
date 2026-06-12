@@ -152,21 +152,21 @@ export default function AdminAccountPage() {
 
   return (
     <div className="p-10 max-w-lg">
-      <h1 className="text-2xl font-semibold text-text-primary mb-1">Account</h1>
-      <p className="text-text-secondary text-sm mb-8">
-        Signed in as <span className="text-text-primary font-medium">{user?.email}</span>
+      <h1 className="text-2xl font-semibold text-white mb-1">Account</h1>
+      <p className="text-white/50 text-sm mb-8">
+        Signed in as <span className="text-white font-medium">{user?.email}</span>
       </p>
 
       {/* Tabs */}
-      <div className="flex border-b border-border-color mb-8">
+      <div className="flex border-b border-white/10 mb-8">
         {(["password", "email"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`pb-3 px-4 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
               tab === t
-                ? "border-primary text-primary"
-                : "border-transparent text-text-secondary hover:text-text-primary"
+                ? "border-flame text-flame"
+                : "border-transparent text-white/50 hover:text-white"
             }`}
           >
             Change {t}
@@ -178,12 +178,12 @@ export default function AdminAccountPage() {
       {tab === "password" && (
         <div>
           {pwSuccess && (
-            <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl mb-6">
               Password changed successfully.
             </div>
           )}
           {pwError && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
               {pwError}
             </div>
           )}
@@ -191,18 +191,18 @@ export default function AdminAccountPage() {
           {!pwOtpSent ? (
             <form onSubmit={sendPasswordOtp} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">Current password</label>
+                <label className="block text-sm font-medium text-white mb-2">Current password</label>
                 <input
                   type="password"
                   value={pwForm.password}
                   onChange={(e) => setPwForm((p) => ({ ...p, password: e.target.value }))}
                   required
-                  className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors placeholder:text-white/30"
                   placeholder="••••••••"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">New password</label>
+                <label className="block text-sm font-medium text-white mb-2">New password</label>
                 <input
                   type="password"
                   value={pwForm.new_password}
@@ -211,13 +211,13 @@ export default function AdminAccountPage() {
                     setShowReqs(true);
                   }}
                   required
-                  className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors placeholder:text-white/30"
                   placeholder="••••••••"
                 />
                 {showReqs && (
                   <ul className="mt-3 space-y-1.5">
                     {REQ_LABELS.map(({ key, label }) => (
-                      <li key={key} className={`flex items-center gap-2 text-xs ${pwReqs[key] ? "text-green-600" : "text-text-secondary"}`}>
+                      <li key={key} className={`flex items-center gap-2 text-xs ${pwReqs[key] ? "text-green-400" : "text-white/40"}`}>
                         {pwReqs[key] ? <Check size={11} /> : <X size={11} />}
                         {label}
                       </li>
@@ -226,37 +226,37 @@ export default function AdminAccountPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">Confirm new password</label>
+                <label className="block text-sm font-medium text-white mb-2">Confirm new password</label>
                 <input
                   type="password"
                   value={pwForm.confirm}
                   onChange={(e) => setPwForm((p) => ({ ...p, confirm: e.target.value }))}
                   required
-                  className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors placeholder:text-white/30"
                   placeholder="••••••••"
                 />
               </div>
               <button
                 type="submit"
                 disabled={pwLoading}
-                className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                className="bg-flame text-ink px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors disabled:opacity-50"
               >
                 {pwLoading ? "Verifying…" : "Send confirmation code"}
               </button>
             </form>
           ) : (
             <form onSubmit={confirmPasswordChange} className="space-y-4">
-              <p className="text-text-secondary text-sm">
+              <p className="text-white/50 text-sm">
                 A confirmation code was sent to <strong>{user?.email}</strong>. Enter it below.
               </p>
               <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">Confirmation code</label>
+                <label className="block text-sm font-medium text-white mb-2">Confirmation code</label>
                 <input
                   type="text"
                   value={pwOtp}
                   onChange={(e) => setPwOtp(e.target.value)}
                   required
-                  className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors tracking-widest"
+                  className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors tracking-widest placeholder:text-white/30"
                   placeholder="000000"
                   maxLength={6}
                 />
@@ -265,14 +265,14 @@ export default function AdminAccountPage() {
                 <button
                   type="submit"
                   disabled={pwLoading}
-                  className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                  className="bg-flame text-ink px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors disabled:opacity-50"
                 >
                   {pwLoading ? "Confirming…" : "Confirm change"}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setPwOtpSent(false); setPwError(""); }}
-                  className="text-sm text-text-secondary hover:text-text-primary transition-colors px-4"
+                  className="text-sm text-white/50 hover:text-white transition-colors px-4"
                 >
                   Cancel
                 </button>
@@ -286,12 +286,12 @@ export default function AdminAccountPage() {
       {tab === "email" && (
         <div>
           {emailSuccess && (
-            <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl mb-6">
               Email changed successfully.
             </div>
           )}
           {emailError && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
               {emailError}
             </div>
           )}
@@ -300,40 +300,40 @@ export default function AdminAccountPage() {
             !emailOtpSent ? (
               <form onSubmit={sendEmailOtp} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">New email address</label>
+                  <label className="block text-sm font-medium text-white mb-2">New email address</label>
                   <input
                     type="email"
                     value={emailForm.new_email}
                     onChange={(e) => setEmailForm({ new_email: e.target.value })}
                     required
-                    className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors placeholder:text-white/30"
                     placeholder="new@example.com"
                   />
                 </div>
-                <p className="text-text-secondary text-xs">
+                <p className="text-white/50 text-xs">
                   A confirmation code will be sent to your <strong>current</strong> email address.
                 </p>
                 <button
                   type="submit"
                   disabled={emailLoading}
-                  className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                  className="bg-flame text-ink px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors disabled:opacity-50"
                 >
                   {emailLoading ? "Sending…" : "Send confirmation code"}
                 </button>
               </form>
             ) : (
               <form onSubmit={confirmEmailChange} className="space-y-4">
-                <p className="text-text-secondary text-sm">
+                <p className="text-white/50 text-sm">
                   A confirmation code was sent to <strong>{user?.email}</strong>. Enter it below.
                 </p>
                 <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">Confirmation code</label>
+                  <label className="block text-sm font-medium text-white mb-2">Confirmation code</label>
                   <input
                     type="text"
                     value={emailOtp}
                     onChange={(e) => setEmailOtp(e.target.value)}
                     required
-                    className="w-full border border-border-color rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors tracking-widest"
+                    className="w-full bg-ink-light border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-flame transition-colors tracking-widest placeholder:text-white/30"
                     placeholder="000000"
                     maxLength={6}
                   />
@@ -342,14 +342,14 @@ export default function AdminAccountPage() {
                   <button
                     type="submit"
                     disabled={emailLoading}
-                    className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+                    className="bg-flame text-ink px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors disabled:opacity-50"
                   >
                     {emailLoading ? "Confirming…" : "Confirm change"}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setEmailOtpSent(false); setEmailError(""); }}
-                    className="text-sm text-text-secondary hover:text-text-primary transition-colors px-4"
+                    className="text-sm text-white/50 hover:text-white transition-colors px-4"
                   >
                     Cancel
                   </button>

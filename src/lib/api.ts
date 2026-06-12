@@ -61,56 +61,18 @@ async function handle(res: Response) {
   return res.json().catch(() => null);
 }
 
-export const articlesAPI = {
+export const projectsAPI = {
   getAll: () =>
-    fetch(`${BASE_URL}/articles`).then(handle),
-
-  getBySlug: (slug: string) =>
-    fetch(`${BASE_URL}/articles/${slug}`).then(handle),
-
-  getById: (id: string) =>
-    fetch(`${BASE_URL}/articles/by-id/${id}`).then(handle),
-
-  getPinned: () =>
-    fetch(`${BASE_URL}/articles/pinned`).then(handle),
+    fetch(`${BASE_URL}/projects`, { cache: "no-store" }).then(handle),
 
   create: (formData: FormData) =>
-    fetchWithAuth(`${BASE_URL}/articles/create`, { method: "POST", body: formData }).then(handle),
+    fetchWithAuth(`${BASE_URL}/projects/create`, { method: "POST", body: formData }).then(handle),
 
   update: (id: string, formData: FormData) =>
-    fetchWithAuth(`${BASE_URL}/articles/update/${id}`, { method: "PATCH", body: formData }).then(handle),
+    fetchWithAuth(`${BASE_URL}/projects/update/${id}`, { method: "PATCH", body: formData }).then(handle),
 
   delete: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/articles/delete/${id}`, { method: "DELETE" }).then(handle),
-
-  pin: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/articles/pin/${id}`, { method: "PATCH" }).then(handle),
-
-  unpin: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/articles/unpin/${id}`, { method: "PATCH" }).then(handle),
-};
-
-export const uploadedArticlesAPI = {
-  getAll: () =>
-    fetchWithAuth(`${BASE_URL}/upload-article`).then(handle),
-
-  getById: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/upload-article/${id}`).then(handle),
-
-  create: (formData: FormData) =>
-    fetchWithAuth(`${BASE_URL}/upload-article/create`, { method: "POST", body: formData }).then(handle),
-
-  update: (id: string, formData: FormData) =>
-    fetchWithAuth(`${BASE_URL}/upload-article/update/${id}`, { method: "PATCH", body: formData }).then(handle),
-
-  pin: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/upload-article/pin/${id}`, { method: "PATCH" }).then(handle),
-
-  unpin: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/upload-article/unpin/${id}`, { method: "PATCH" }).then(handle),
-
-  delete: (id: string) =>
-    fetchWithAuth(`${BASE_URL}/upload-article?id=${id}`, { method: "DELETE" }).then(handle),
+    fetchWithAuth(`${BASE_URL}/projects/${id}`, { method: "DELETE" }).then(handle),
 };
 
 export const bioAPI = {

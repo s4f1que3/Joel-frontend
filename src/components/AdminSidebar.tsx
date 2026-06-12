@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, User, Phone, FileUp, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import { Briefcase, User, Phone, FileUp, Settings, LayoutDashboard, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/articles", label: "Articles", icon: FileText, exact: false },
+  { href: "/admin/projects", label: "Projects", icon: Briefcase, exact: false },
   { href: "/admin/bio", label: "Bio", icon: User, exact: false },
   { href: "/admin/contact", label: "Contact", icon: Phone, exact: false },
   { href: "/admin/resume", label: "Resume / CV", icon: FileUp, exact: false },
@@ -25,9 +25,9 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-56 shrink-0 border-r border-border-color min-h-screen p-5 flex flex-col bg-white">
-      <Link href="/" className="text-text-primary font-semibold text-base mb-8 block hover:text-primary transition-colors">
-        Joel Richards
+    <aside className="w-56 shrink-0 border-r border-white/10 min-h-screen p-5 flex flex-col bg-ink-light">
+      <Link href="/" className="text-white font-extrabold text-base tracking-widest mb-8 block hover:text-flame transition-colors">
+        ERUSS
       </Link>
       <nav className="flex flex-col gap-0.5 flex-1">
         {links.map(({ href, label, icon: Icon, exact }) => {
@@ -38,8 +38,8 @@ export default function AdminSidebar() {
               href={href}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                 active
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-text-secondary hover:text-text-primary hover:bg-surface"
+                  ? "bg-flame/10 text-flame font-medium"
+                  : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
               <Icon size={15} />
@@ -50,7 +50,7 @@ export default function AdminSidebar() {
       </nav>
       <button
         onClick={handleSignOut}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-red-500 transition-colors mt-4"
+        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/50 hover:text-red-400 transition-colors mt-4"
       >
         <LogOut size={15} />
         Sign out

@@ -1,28 +1,24 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
+import Image from "next/image";
 import { Mail, Phone, Instagram, Linkedin, ArrowRight, Download } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ArticleCard from "@/components/ArticleCard";
+import ProjectCard from "@/components/ProjectCard";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 async function getData() {
-  const [articlesRes, pinnedRes, bioRes, contactRes, resumeRes] = await Promise.allSettled([
-    fetch(`${API}/articles`, { cache: "no-store" }),
-    fetch(`${API}/articles/pinned`, { cache: "no-store" }),
+  const [projectsRes, bioRes, contactRes, resumeRes] = await Promise.allSettled([
+    fetch(`${API}/projects`, { cache: "no-store" }),
     fetch(`${API}/bio`, { cache: "no-store" }),
     fetch(`${API}/contact`, { cache: "no-store" }),
     fetch(`${API}/resume`, { cache: "no-store" }),
   ]);
 
-  const articles = articlesRes.status === "fulfilled" && articlesRes.value.ok
-    ? await articlesRes.value.json().catch(() => [])
+  const projects = projectsRes.status === "fulfilled" && projectsRes.value.ok
+    ? await projectsRes.value.json().catch(() => [])
     : [];
-  const pinned = pinnedRes.status === "fulfilled" && pinnedRes.value.ok
-    ? await pinnedRes.value.json().catch(() => null)
-    : null;
   const bio = bioRes.status === "fulfilled" && bioRes.value.ok
     ? await bioRes.value.json().catch(() => null)
     : null;
@@ -34,88 +30,221 @@ async function getData() {
     : null;
   const resumeUrl: string | null = resumeData?.file?.asset?.url ?? null;
 
-  return { articles: Array.isArray(articles) ? articles : [], pinned, bio, contact, resumeUrl };
+  return { projects: Array.isArray(projects) ? projects : [], bio, contact, resumeUrl };
 }
 
 export default async function HomePage() {
-  const { articles, pinned, bio, contact, resumeUrl } = await getData();
+  const { projects, bio, contact, resumeUrl } = await getData();
 
-  const recent = articles
-    .filter((a: { _id: string }) => !pinned || a._id !== pinned._id)
-    .slice(0, 3);
+  const bioContent: string | undefined = bio?.[0]?.content || bio?.content;
+  const email: string | undefined = contact?.[0]?.email || contact?.email;
+  const phone: string | undefined = contact?.[0]?.phone || contact?.phone;
+  const instagram: string | undefined = contact?.[0]?.instagram || contact?.instagram;
+  const linkedin: string | undefined = contact?.[0]?.linkedin || contact?.linkedin;
 
   return (
-    <>
+    <div className="bg-ink min-h-screen">
       <Navbar />
       <main className="pt-14">
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-6 pt-28 pb-24">
-          <p className="text-primary text-sm font-medium mb-4 tracking-wide uppercase">
-            Portfolio
-          </p>
-          <h1 className="text-5xl font-bold text-text-primary tracking-tight leading-tight mb-6">
-            Joel Richards
-          </h1>
-          {bio && (
-            <p className="text-text-secondary text-xl leading-relaxed max-w-2xl">
-              {bio[0]?.content || bio?.content}
-            </p>
-          )}
-          <div className="flex items-center gap-4 mt-8">
-            <Link
-              href="/articles"
-              className="bg-primary text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-primary-dark transition-colors inline-flex items-center gap-2"
-            >
-              Read articles <ArrowRight size={15} />
-            </Link>
-            <a
-              href="/#contact"
-              className="border border-border-color text-text-primary px-6 py-3 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-colors"
-            >
-              Get in touch
-            </a>
-          </div>
-        </section>
+        <section className="relative bg-ink overflow-hidden">
+          {/* decorative giant letter */}
+          <span className="pointer-events-none select-none absolute -top-16 -left-6 text-[14rem] sm:text-[250px] font-extrabold text-white/[0.03] leading-none">
+            ERUSS
+          </span>
 
-        {/* Articles */}
-        <section className="max-w-5xl mx-auto px-6 pb-24">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-semibold text-text-primary">Articles</h2>
-            <Link
-              href="/articles"
-              className="text-sm text-primary hover:text-primary-dark transition-colors inline-flex items-center gap-1 font-medium"
-            >
-              View all <ArrowRight size={14} />
-            </Link>
+          {/* decorative dot grid */}
+          <div
+            className="pointer-events-none absolute top-24 right-10 w-40 h-40 opacity-20 hidden sm:block"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #FF751F 1.5px, transparent 1.5px)",
+              backgroundSize: "18px 18px",
+            }}
+          />
+
+          <div className="relative max-w-6xl mx-auto px-6 lg:px-12 pt-28 pb-20 lg:pb-28 grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left: copy */}
+            <div className="relative z-10">
+              <p className="text-flame text-sm font-semibold uppercase tracking-[0.3em] mb-5">
+                Hi there,
+              </p>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.05] mb-6">
+                I&apos;m <span className="text-flame">Safique</span>
+              </h1>
+              {bioContent && (
+                <p className="text-white/60 text-lg leading-relaxed max-w-md mb-10 line-clamp-4">
+                  {bioContent}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-4">
+                <a
+                  href="#projects"
+                  className="bg-flame text-ink px-6 py-3 rounded-full text-sm font-semibold hover:bg-flame-dark transition-colors inline-flex items-center gap-2"
+                >
+                  View my work <ArrowRight size={15} />
+                </a>
+                <a
+                  href="/#contact"
+                  className="border border-white/15 text-white px-6 py-3 rounded-full text-sm font-medium hover:border-flame hover:text-flame transition-colors"
+                >
+                  Get in touch
+                </a>
+              </div>
+            </div>
+
+            {/* Right: portrait */}
+            <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+              {/* orange blob */}
+              <div className="absolute -inset-4 sm:-inset-6 rounded-[2.5rem] bg-flame rotate-3 z-0" />
+              {/* mark decoration */}
+              <div className="absolute -top-12 -right-8 sm:-right-12 w-32 h-32 sm:w-44 sm:h-44 rotate-6 z-[1]">
+                <Image src="/eruss-mark.png" alt="" fill className="object-contain" />
+              </div>
+              {/* portrait */}
+              <div className="relative z-10 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl aspect-[2/3]">
+                <Image
+                  src="/IMG_6936.jpg"
+                  alt="Portrait"
+                  fill
+                  priority
+                  className="object-cover"
+                />
+              </div>
+              {/* tagline badge */}
+              <div className="absolute -bottom-6 -left-4 sm:-left-8 z-20 bg-ink-light border border-white/10 rounded-2xl px-5 py-4 shadow-xl">
+                <p className="text-flame text-[10px] font-semibold uppercase tracking-[0.25em] mb-1">
+                  Est.
+                </p>
+                <p className="text-white font-bold text-sm tracking-wide">
+                  US &amp; THEM
+                </p>
+              </div>
+            </div>
           </div>
 
-          {pinned && (
-            <div className="mb-5">
-              <ArticleCard article={pinned} />
+          {/* contact strip */}
+          {contact && (
+            <div className="relative border-t border-white/10">
+              <div className="max-w-6xl mx-auto px-6 lg:px-12 py-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {email && (
+                  <a
+                    href={`mailto:${email}`}
+                    className="flex items-center gap-3 text-white/70 hover:text-flame transition-colors group"
+                  >
+                    <Mail size={18} className="text-flame" />
+                    <div>
+                      <p className="text-xs text-white/40 mb-0.5">Email</p>
+                      <p className="text-sm font-medium">{email}</p>
+                    </div>
+                  </a>
+                )}
+                {phone && (
+                  <a
+                    href={`tel:${phone}`}
+                    className="flex items-center gap-3 text-white/70 hover:text-flame transition-colors group"
+                  >
+                    <Phone size={18} className="text-flame" />
+                    <div>
+                      <p className="text-xs text-white/40 mb-0.5">Phone</p>
+                      <p className="text-sm font-medium">{phone}</p>
+                    </div>
+                  </a>
+                )}
+                {(instagram || linkedin) && (
+                  <div className="flex items-center gap-3">
+                    <p className="text-xs text-white/40">Connect</p>
+                    {instagram && (
+                      <a
+                        href={instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 flex items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-flame hover:border-flame transition-colors"
+                      >
+                        <Instagram size={16} />
+                      </a>
+                    )}
+                    {linkedin && (
+                      <a
+                        href={linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 flex items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-flame hover:border-flame transition-colors"
+                      >
+                        <Linkedin size={16} />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
+        </section>
 
-          {recent.length > 0 ? (
+        {/* vertical social rail */}
+        {(instagram || linkedin || email) && (
+          <div className="hidden lg:flex fixed left-6 bottom-10 z-40 flex-col items-center gap-5">
+            {instagram && (
+              <a
+                href={instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/40 hover:text-flame transition-colors"
+              >
+                <Instagram size={18} />
+              </a>
+            )}
+            {linkedin && (
+              <a
+                href={linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/40 hover:text-flame transition-colors"
+              >
+                <Linkedin size={18} />
+              </a>
+            )}
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className="text-white/40 hover:text-flame transition-colors"
+              >
+                <Mail size={18} />
+              </a>
+            )}
+            <span className="w-px h-16 bg-white/10" />
+          </div>
+        )}
+
+        {/* Projects */}
+        <section id="projects" className="max-w-5xl mx-auto px-6 pt-24 pb-24">
+          <p className="text-flame text-sm font-semibold uppercase tracking-[0.3em] mb-3">
+            Work
+          </p>
+          <h2 className="text-2xl font-semibold text-white mb-8">Projects</h2>
+
+          {projects.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recent.map((article: { _id: string; Title: string; content: string; slug?: { current: string }; publishedAt?: string; pinned?: boolean }) => (
-                <ArticleCard key={article._id} article={article} />
+              {projects.map((project: { _id: string; title: string; description: string; tech_stack?: string; link: string; thumbnail?: { asset?: { url?: string } } }) => (
+                <ProjectCard key={project._id} project={project} />
               ))}
             </div>
           ) : (
-            !pinned && (
-              <p className="text-text-secondary text-sm">No articles yet.</p>
-            )
+            <p className="text-white/50 text-sm">No projects yet.</p>
           )}
         </section>
 
         {/* Bio */}
-        {bio && (
-          <section className="bg-surface">
+        {bioContent && (
+          <section className="bg-ink-light border-y border-white/10">
             <div className="max-w-5xl mx-auto px-6 py-24">
-              <h2 className="text-2xl font-semibold text-text-primary mb-6">About</h2>
+              <p className="text-flame text-sm font-semibold uppercase tracking-[0.3em] mb-3">
+                About me
+              </p>
+              <h2 className="text-2xl font-semibold text-white mb-6">The story so far</h2>
               <div className="max-w-2xl">
-                <p className="text-text-secondary text-base leading-relaxed whitespace-pre-wrap">
-                  {bio[0]?.content || bio?.content}
+                <p className="text-white/60 text-base leading-relaxed whitespace-pre-wrap">
+                  {bioContent}
                 </p>
               </div>
             </div>
@@ -123,9 +252,12 @@ export default async function HomePage() {
         )}
 
         {/* CV */}
-        <section className="max-w-5xl mx-auto px-6 py-24 border-b border-border-color">
-          <h2 className="text-2xl font-semibold text-text-primary mb-3">Resume / CV</h2>
-          <p className="text-text-secondary text-sm mb-6">
+        <section className="max-w-5xl mx-auto px-6 py-24 border-b border-white/10">
+          <p className="text-flame text-sm font-semibold uppercase tracking-[0.3em] mb-3">
+            Experience
+          </p>
+          <h2 className="text-2xl font-semibold text-white mb-3">Resume / CV</h2>
+          <p className="text-white/60 text-sm mb-6">
             Download my resume to learn more about my experience and background.
           </p>
           {resumeUrl ? (
@@ -133,7 +265,7 @@ export default async function HomePage() {
               href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-border-color text-text-primary px-5 py-2.5 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 border border-white/15 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:border-flame hover:text-flame transition-colors"
             >
               <Download size={15} />
               Download CV
@@ -143,64 +275,67 @@ export default async function HomePage() {
 
         {/* Contact */}
         <section id="contact" className="max-w-5xl mx-auto px-6 py-24">
-          <h2 className="text-2xl font-semibold text-text-primary mb-8">Contact</h2>
+          <p className="text-flame text-sm font-semibold uppercase tracking-[0.3em] mb-3">
+            Get in touch
+          </p>
+          <h2 className="text-2xl font-semibold text-white mb-8">Contact</h2>
           {contact ? (
             <div className="flex flex-wrap gap-4">
-              {contact[0]?.email || contact?.email ? (
+              {email ? (
                 <a
-                  href={`mailto:${contact[0]?.email || contact?.email}`}
-                  className="flex items-center gap-3 border border-border-color rounded-2xl px-5 py-4 hover:border-primary hover:text-primary group transition-colors"
+                  href={`mailto:${email}`}
+                  className="flex items-center gap-3 border border-white/10 bg-ink-light rounded-2xl px-5 py-4 hover:border-flame hover:text-flame group transition-colors"
                 >
-                  <Mail size={20} className="text-primary" />
+                  <Mail size={20} className="text-flame" />
                   <div>
-                    <p className="text-xs text-text-secondary mb-0.5">Email</p>
-                    <p className="text-sm text-text-primary font-medium group-hover:text-primary transition-colors">
-                      {contact[0]?.email || contact?.email}
+                    <p className="text-xs text-white/40 mb-0.5">Email</p>
+                    <p className="text-sm text-white font-medium group-hover:text-flame transition-colors">
+                      {email}
                     </p>
                   </div>
                 </a>
               ) : null}
-              {contact[0]?.phone || contact?.phone ? (
+              {phone ? (
                 <a
-                  href={`tel:${contact[0]?.phone || contact?.phone}`}
-                  className="flex items-center gap-3 border border-border-color rounded-2xl px-5 py-4 hover:border-primary hover:text-primary group transition-colors"
+                  href={`tel:${phone}`}
+                  className="flex items-center gap-3 border border-white/10 bg-ink-light rounded-2xl px-5 py-4 hover:border-flame hover:text-flame group transition-colors"
                 >
-                  <Phone size={20} className="text-primary" />
+                  <Phone size={20} className="text-flame" />
                   <div>
-                    <p className="text-xs text-text-secondary mb-0.5">Phone</p>
-                    <p className="text-sm text-text-primary font-medium group-hover:text-primary transition-colors">
-                      {contact[0]?.phone || contact?.phone}
+                    <p className="text-xs text-white/40 mb-0.5">Phone</p>
+                    <p className="text-sm text-white font-medium group-hover:text-flame transition-colors">
+                      {phone}
                     </p>
                   </div>
                 </a>
               ) : null}
-              {contact[0]?.instagram || contact?.instagram ? (
+              {instagram ? (
                 <a
-                  href={contact[0]?.instagram || contact?.instagram}
+                  href={instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 border border-border-color rounded-2xl px-5 py-4 hover:border-primary hover:text-primary group transition-colors"
+                  className="flex items-center gap-3 border border-white/10 bg-ink-light rounded-2xl px-5 py-4 hover:border-flame hover:text-flame group transition-colors"
                 >
-                  <Instagram size={20} className="text-primary" />
+                  <Instagram size={20} className="text-flame" />
                   <div>
-                    <p className="text-xs text-text-secondary mb-0.5">Instagram</p>
-                    <p className="text-sm text-text-primary font-medium group-hover:text-primary transition-colors">
+                    <p className="text-xs text-white/40 mb-0.5">Instagram</p>
+                    <p className="text-sm text-white font-medium group-hover:text-flame transition-colors">
                       View profile
                     </p>
                   </div>
                 </a>
               ) : null}
-              {contact[0]?.linkedin || contact?.linkedin ? (
+              {linkedin ? (
                 <a
-                  href={contact[0]?.linkedin || contact?.linkedin}
+                  href={linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 border border-border-color rounded-2xl px-5 py-4 hover:border-primary hover:text-primary group transition-colors"
+                  className="flex items-center gap-3 border border-white/10 bg-ink-light rounded-2xl px-5 py-4 hover:border-flame hover:text-flame group transition-colors"
                 >
-                  <Linkedin size={20} className="text-primary" />
+                  <Linkedin size={20} className="text-flame" />
                   <div>
-                    <p className="text-xs text-text-secondary mb-0.5">LinkedIn</p>
-                    <p className="text-sm text-text-primary font-medium group-hover:text-primary transition-colors">
+                    <p className="text-xs text-white/40 mb-0.5">LinkedIn</p>
+                    <p className="text-sm text-white font-medium group-hover:text-flame transition-colors">
                       View profile
                     </p>
                   </div>
@@ -208,11 +343,11 @@ export default async function HomePage() {
               ) : null}
             </div>
           ) : (
-            <p className="text-text-secondary text-sm">Contact information not available.</p>
+            <p className="text-white/50 text-sm">Contact information not available.</p>
           )}
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
